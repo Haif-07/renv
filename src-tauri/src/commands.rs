@@ -1,6 +1,5 @@
 use std::env;
 use std::path::PathBuf;
-use std::sync:: Mutex;
 use tauri::State;
 
 use crate::AppState;

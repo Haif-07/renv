@@ -112,17 +112,24 @@ impl ShellConfig {
     }
     fn parse_line(&mut self, index:u64,line: &str) {
         let line = line.trim();
-        // 解析环境变量
         let env_re = Regex::new(r#"^export\s+([a-zA-Z_]+)=['"]?(.*?)['"]?$"#).unwrap();
         if let Some(caps) = env_re.captures(line) {
-            if &caps[1] == "PATH" {
+            let key = caps[1].to_string();
+            let value_str = caps[2].to_string();
+            
+            let value = if value_str.contains("http://") || value_str.contains("https://") {
+                vec![value_str]
+            } else {
+                value_str.split(':')
+                .map(|s| s.to_string())
+                .collect()
+            };
+
+            let env = EnvVariable { key: key.clone(), value };
+            if key == "PATH" {
                 self.path_line = index;
             }
-            self.env_vars.insert(index, EnvVariable{
-                key: caps[1].to_string(),
-                value: caps[2].split(':').map(|s| s.to_string()).collect(),
-            });
-            return;
+            self.env_vars.insert(index, env);
         }
     }
     
