@@ -73,6 +73,7 @@ impl ShellConfig {
         }   
 
         self.all_lines += 1;
+        print!("{}",self.all_lines);
         // 更新内存中的数据
         self.env_vars.insert(self.all_lines, EnvVariable {
             key: env.key.to_string(),
@@ -99,9 +100,15 @@ impl ShellConfig {
         
         // 更新需要修改的行
         for (index, env) in &self.env_vars {
-            if *index > 0 && (*index as usize) <= lines.len() {
-                lines[*index as usize - 1] = format!("export {}=\"{}\"", env.key, env.value.join(":"));
-            }
+           
+                let nowindex=*index as usize - 1;
+                if nowindex >= lines.len() {
+                    lines.push(format!("export {}=\"{}\"", env.key, env.value.join(":")));
+                    continue;
+                }
+
+                lines[nowindex] = format!("export {}=\"{}\"", env.key, env.value.join(":"));
+            
         }
         
         // 将所有内容写回文件

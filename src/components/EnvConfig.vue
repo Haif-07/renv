@@ -131,6 +131,7 @@ const getEnvList = async (filePath: string) => {
   } else {
     //在界面上弹出错误
     console.error('获取文件列表失败:', result.message);
+    envList.value = [];
   }
 }
 onMounted(() => {
@@ -181,8 +182,10 @@ const handleAddEnv = async (env: any) => {
       }
     })
     if (result.code === 200) {
+      //保存
+      saveEnvVariable()
       // 刷新列表
-      await getEnvList(fileList.value[0].path)
+      await getEnvList(activeFilePath.value)
     }
   } catch (error) {
     console.error('添加失败:', error)
